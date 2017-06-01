@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 /*!
 * Vuetify v0.12.4
 * Forged by John Leider
@@ -8902,4 +8900,3 @@ if (typeof window !== 'undefined' && window.Vue) {
 /******/ ]);
 });
 //# sourceMappingURL=vuetify.js.map
->>>>>>> master
