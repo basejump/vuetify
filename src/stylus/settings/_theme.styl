@@ -6,7 +6,8 @@ $body-font-family := 'Roboto', sans-serif
 $font-size-root := 14px
 $line-height-root := 1.5
 
-$theme := {
+$theme = $theme is defined ? $theme : {}
+$theme = merge({
   primary: $blue.darken-2
   accent: $blue.accent-2
   secondary: $grey.darken-3
@@ -14,11 +15,11 @@ $theme := {
   warning: $amber.base
   error: $red.accent-2
   success: $green.base
-}
+},$theme)
 
 // Material Design - https://material.io/guidelines/style/color.html#color-usability
 // ============================================================
-$material-light := {
+$material-light-defaults = {
   bg-color: #fff
   fg-color: #000
   text-color: #000
@@ -29,7 +30,10 @@ $material-light := {
   active-icon-percent: .54
   inactive-icon-percent: .38
 }
-$material-dark := {
+$material-light := {}
+$material-light = merge($material-light-defaults , $material-light)
+
+$material-dark-defaults := {
   bg-color: #303030
   fg-color: #fff
   text-color: #fff
@@ -40,6 +44,9 @@ $material-dark := {
   active-icon-percent: 1
   inactive-icon-percent: .50
 }
+$material-dark := {}
+$material-dark = merge($material-dark-defaults , $material-dark)
+
 
 // Default Material Theme
 // ============================================================

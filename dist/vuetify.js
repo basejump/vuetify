@@ -229,9 +229,15 @@ function getObjectValueByPath (obj, path) {
       type: Boolean,
       default: true
     },
-    light: {
-      type: Boolean,
-      default: false
+    light: Boolean
+  },
+
+  computed: {
+    _dark: function _dark () {
+      return this.dark && !this.light
+    },
+    _light: function _light () {
+      return this.light
     }
   }
 };
@@ -460,8 +466,8 @@ module.exports = function normalizeComponent (
         'input-group--dirty': this.isDirty,
         'input-group--tab-focused': this.tabFocused,
         'input-group--disabled': this.disabled,
-        'input-group--light': this.light || !this.dark,
-        'input-group--dark': !this.light && this.dark,
+        'input-group--light': this._light,
+        'input-group--dark': this._dark,
         'input-group--error': this.hasError || this.errors.length > 0,
         'input-group--append-icon': this.appendIcon,
         'input-group--prepend-icon': this.prependIcon,
@@ -1423,14 +1429,14 @@ var Avatar = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util_helpers__["
         'btn': true,
         'btn--active': this.isActive,
         'btn--block': this.block,
-        'btn--dark': !this.light && this.dark,
+        'btn--dark': this._dark,
         'btn--default': this.default,
         'btn--disabled': this.disabled,
         'btn--flat': this.flat,
         'btn--floating': this.floating,
         'btn--icon': this.icon,
         'btn--large': this.large,
-        'btn--light': this.light || !this.dark,
+        'btn--light': this._light,
         'btn--loader': this.loading,
         'btn--outline': this.outline,
         'btn--raised': !this.flat,
@@ -1993,13 +1999,16 @@ var CardTitle = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__util_helpers_
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_themeable__ = __webpack_require__(1);
+
+
 var Divider = {
   functional: true,
 
+  mixins: [__WEBPACK_IMPORTED_MODULE_0__mixins_themeable__["a" /* default */]],
+
   props: {
-    dark: Boolean,
-    inset: Boolean,
-    light: Boolean
+    inset: Boolean
   },
 
   render: function render (h, ref) {
@@ -2011,7 +2020,7 @@ var Divider = {
 
     if (props.inset) { data.staticClass += ' divider--inset' }
     if (props.light) { data.staticClass += ' divider--light' }
-    if (props.dark) { data.staticClass += ' divider--dark' }
+    if (props.dark && !props.light) { data.staticClass += ' divider--dark' }
 
     return h('hr', data)
   }
@@ -2072,8 +2081,13 @@ var Divider = {
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_themeable__ = __webpack_require__(1);
+
+
 var Footer = {
   functional: true,
+
+  mixins: [__WEBPACK_IMPORTED_MODULE_0__mixins_themeable__["a" /* default */]],
 
   props: {
     absolute: Boolean,
@@ -2089,6 +2103,8 @@ var Footer = {
 
     if (props.absolute) { data.staticClass += ' footer--absolute' }
     if (props.fixed) { data.staticClass += ' footer--fixed' }
+    if (props.dark && !props.light) { data.staticClass += ' footer--dark' }
+    if (props.light) { data.staticClass += ' footer--light' }
 
     return h('footer', data, children)
   }
@@ -2283,8 +2299,8 @@ var Footer = {
     containerClasses: function containerClasses () {
       return {
         'input-group--selection-controls__container': true,
-        'input-group--selection-controls__container--light': this.light,
-        'input-group--selection-controls__container--dark': this.dark,
+        'input-group--selection-controls__container--light': this._light,
+        'input-group--selection-controls__container--dark': this._dark,
         'input-group--selection-controls__container--disabled': this.disabled,
         'primary--text': this.primary,
         'secondary--text': this.secondary,
@@ -2685,10 +2701,10 @@ var Spacer = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util_helpers__["
     data.staticClass = data.staticClass ? (icon + " icon " + (data.staticClass) + " ") : (icon + " icon ")
 
     var classes = {
-      'icon--dark': !props.light || props.dark,
+      'icon--dark': props.dark && !props.light,
+      'icon--light': props.light,
       'icon--large': props.large,
       'icon--left': props.left,
-      'icon--light': props.light || !props.dark,
       'icon--medium': props.medium,
       'icon--right': props.right,
       'icon--x-large': props.xLarge
@@ -2726,8 +2742,13 @@ var Spacer = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util_helpers__["
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_themeable__ = __webpack_require__(1);
+
+
 /* harmony default export */ exports["a"] = {
   name: 'list',
+
+  mixins: [__WEBPACK_IMPORTED_MODULE_0__mixins_themeable__["a" /* default */]],
 
   data: function data () {
     return {
@@ -2750,7 +2771,9 @@ var Spacer = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util_helpers__["
         'list--two-line': this.twoLine,
         'list--dense': this.dense,
         'list--three-line': this.threeLine,
-        'list--subheader': this.subheader
+        'list--subheader': this.subheader,
+        'list--dark': this._dark,
+        'list--light': this._light,
       }
     }
   },
@@ -2922,13 +2945,15 @@ var Spacer = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util_helpers__["
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_route_link__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__mixins_toggleable__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__mixins_themeable__ = __webpack_require__(1);
+
 
 
 
 /* harmony default export */ exports["a"] = {
   name: 'list-tile',
 
-  mixins: [__WEBPACK_IMPORTED_MODULE_0__mixins_route_link__["a" /* default */], __WEBPACK_IMPORTED_MODULE_1__mixins_toggleable__["a" /* default */]],
+  mixins: [__WEBPACK_IMPORTED_MODULE_0__mixins_route_link__["a" /* default */], __WEBPACK_IMPORTED_MODULE_1__mixins_toggleable__["a" /* default */], __WEBPACK_IMPORTED_MODULE_2__mixins_themeable__["a" /* default */]],
 
   props: {
     activeClass: {
@@ -2944,7 +2969,9 @@ var Spacer = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util_helpers__["
         'list__tile': true,
         'list__tile--active': this.isActive,
         'list__tile--avatar': this.avatar,
-        'list__tile--disabled': this.disabled
+        'list__tile--disabled': this.disabled,
+        'list__tile--dark': this._dark,
+        'list__tile--light': this._light,
       }
     }
   },
@@ -3556,11 +3583,11 @@ var ListTileSubTitle = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util_h
         'navigation-drawer--is-booted': this.isBooted,
         'navigation-drawer--clipped': this.clipped,
         'navigation-drawer--close': !this.isActive,
-        'navigation-drawer--dark': this.dark,
+        'navigation-drawer--dark': this._dark,
+        'navigation-drawer--light': this._light,
         'navigation-drawer--floating': this.floating,
         'navigation-drawer--full-height': this.fullHeight,
         'navigation-drawer--is-mobile': this.isMobile,
-        'navigation-drawer--light': this.light,
         'navigation-drawer--mini-variant': this.miniVariant,
         'navigation-drawer--open': this.isActive,
         'navigation-drawer--permanent': this.permanent,
@@ -3909,8 +3936,8 @@ var defaultDateFormat = function (val) { return new Date(val).toISOString().subs
       'class': {
         'picker picker--date': true,
         'picker--landscape': this.landscape,
-        'picker--dark': this.dark,
-        'picker--light': this.light && !this.dark
+        'picker--dark': this._dark,
+        'picker--light': this._light
       }
     }, children)
   }
@@ -4085,8 +4112,8 @@ var defaultDateFormat = function (val) { return new Date(val).toISOString().subs
       'class': {
         'picker picker--time': true,
         'picker--landscape': this.landscape,
-        'picker--dark': this.dark,
-        'picker--light': this.light && !this.dark,
+        'picker--dark': this._dark,
+        'picker--light': this._light,
         'picker--time--hours': this.selectingHour
       }
     }, children)
@@ -5802,7 +5829,7 @@ var Subheader = {
 
     data.staticClass = data.staticClass ? ("subheader " + (data.staticClass)) : 'subheader'
     if (props.inset) { data.staticClass += ' subheader--inset' }
-    if (props.dark && !props.light) { data.staticClass += ' subheader--dark' }
+    if (props.dark || !props.light) { data.staticClass += ' subheader--dark' }
     if (props.light) { data.staticClass += ' subheader--light' }
 
     return h('li', data, children)
@@ -6496,8 +6523,8 @@ var TableOverflow = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util_help
         'tabs--grow': this.grow,
         'tabs--icons': this.icons,
         'tabs--scroll-bars': this.scrollBars,
-        'tabs--dark': !this.light && this.dark,
-        'tabs--light': this.light || !this.dark
+        'tabs--dark': this._dark,
+        'tabs--light': this._light,
       }
     }
   },
@@ -6893,7 +6920,7 @@ var TabsItems = {
 
     data.staticClass = data.staticClass ? ("toolbar " + (data.staticClass)) : 'toolbar'
     if (props.fixed) { data.staticClass += ' toolbar--fixed' }
-    if (props.dark) { data.staticClass += ' toolbar--dark' }
+    if (props.dark && !props.light) { data.staticClass += ' toolbar--dark' }
     if (props.light) { data.staticClass += ' toolbar--light' }
 
     return h('nav', data, children)
@@ -7396,8 +7423,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
         'btn-dropdown--editable': this.editable,
         'btn-dropdown--overflow': this.overflow || this.segmented || this.editable,
         'btn-dropdown--segmented': this.segmented,
-        'btn-dropdown--light': this.light || !this.dark,
-        'btn-dropdown--dark': !this.light && this.dark
+        'btn-dropdown--light': this._light,
+        'btn-dropdown--dark': this._dark
       }
     },
 
@@ -7769,6 +7796,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 Object.defineProperty(exports, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_expand_transition__ = __webpack_require__(9);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__mixins_toggleable__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__mixins_themeable__ = __webpack_require__(1);
 //
 //
 //
@@ -7794,6 +7822,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 //
 //
 //
+
 
 
 
@@ -7801,7 +7830,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /* harmony default export */ exports["default"] = {
   name: 'expansion-panel-content',
 
-  mixins: [__WEBPACK_IMPORTED_MODULE_0__mixins_expand_transition__["a" /* default */], __WEBPACK_IMPORTED_MODULE_1__mixins_toggleable__["a" /* default */]],
+  mixins: [__WEBPACK_IMPORTED_MODULE_0__mixins_expand_transition__["a" /* default */], __WEBPACK_IMPORTED_MODULE_1__mixins_toggleable__["a" /* default */], __WEBPACK_IMPORTED_MODULE_2__mixins_themeable__["a" /* default */]],
 
   data: function data () {
     return {
@@ -7817,6 +7846,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
     classes: function classes () {
       return {
         'expansion-panel__header--active': this.isActive
+      }
+    },
+    panelClasses: function panelClasses () {
+      return {
+        'expansion-panel--dark': this._dark,
+        'expansion-panel--light': this._light,
       }
     }
   },
@@ -7836,7 +7871,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 
   methods: {
     closeConditional: function closeConditional (e) {
-      return this.$parent.$el.contains(e.target) && 
+      return this.$parent.$el.contains(e.target) &&
         !this.$parent.expand &&
         !this.$el.contains(e.target)
     },
@@ -8509,8 +8544,8 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "type": _vm.editable ? 'text' : 'button',
       "label": _vm.label,
-      "light": _vm.light || !_vm.dark,
-      "dark": !_vm.light && _vm.dark,
+      "light": _vm._light,
+      "dark": _vm._dark,
       "single-line": "single-line",
       "append-icon": "arrow_drop_down"
     },
@@ -8545,8 +8580,8 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       }
     }, [(option.action) ? _c('v-list-tile-action', [_c('v-icon', {
       attrs: {
-        "light": _vm.light || !_vm.dark,
-        "dark": !_vm.light && _vm.dark
+        "light": _vm._light,
+        "dark": _vm._dark
       }
     }, [_vm._v(_vm._s(option.action))])], 1) : _vm._e(), (option.text) ? _c('v-list-tile-content', [_c('v-list-tile-title', [_vm._v(_vm._s(option.text))])], 1) : _vm._e()], 1)], 1)
   }))], 1)], 1)
@@ -8675,7 +8710,9 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
 /***/ function(module, exports) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('li', [(_vm.$slots.header) ? _c('div', {
+  return _c('li', {
+    class: _vm.panelClasses
+  }, [(_vm.$slots.header) ? _c('div', {
     directives: [{
       name: "click-outside",
       rawName: "v-click-outside",
@@ -8834,8 +8871,8 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, _vm._l((_vm.options), function(option, index) {
     return _c('v-btn', {
       attrs: {
-        "dark": _vm.dark,
-        "light": _vm.light,
+        "dark": _vm._dark,
+        "light": _vm._light,
         "data-selected": _vm.isSelected(option),
         "data-index": index,
         "data-only-child": _vm.isSelected(option) && (!_vm.multiple || _vm.inputValue.length === 1),
@@ -8853,8 +8890,8 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       }
     }) : _vm._e(), (option.icon) ? _c('v-icon', {
       attrs: {
-        "dark": _vm.dark,
-        "light": _vm.light
+        "dark": _vm._dark,
+        "light": _vm._light
       }
     }, [_vm._v(_vm._s(option.icon))]) : _vm._e()], 1)
   }))
