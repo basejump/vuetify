@@ -11,6 +11,7 @@
   left: 0
   will-change: transform
   z-index: 3
+  background: $navigation-drawer-background-dark
 
   // Remove animation when booting up
   &:not(.navigation-drawer--is-booted)
@@ -34,19 +35,18 @@
     position: absolute
 
   &--dark
-    background: $navigation-drawer-background-dark
-    navigation-drawer($material-dark.fg-color)
-
-    .divider
-      background: $material-twelve-percent-light
-
-  &--light
-    background: $navigation-drawer-background-light
-    border-right: 1px solid rgba($material-light.fg-color, $material-light.divider-percent)
-    navigation-drawer(rgba($material-light.fg-color, .87))
+    navigation-drawer($material-light.fg-color)
 
     .divider
       background: $material-twelve-percent-dark
+
+  &--light
+    //background: $navigation-drawer-background-light
+    border-right: 1px solid rgba($material-dark.fg-color, $material-dark.divider-percent)
+    navigation-drawer(rgba($material-dark.fg-color, .87))
+
+    .divider
+      background: $material-twelve-percent-light
 
   &--permanent, &--persistent
     &.navigation-drawer--clipped, &.navigation-drawer--floating
