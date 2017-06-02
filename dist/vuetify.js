@@ -1,5 +1,5 @@
 /*!
-* Vuetify v0.12.4
+* Vuetify v0.12.5
 * Forged by John Leider
 * Released under the MIT License.
 */   
@@ -229,15 +229,9 @@ function getObjectValueByPath (obj, path) {
       type: Boolean,
       default: true
     },
-    light: Boolean
-  },
-
-  computed: {
-    _dark: function _dark () {
-      return this.dark && !this.light
-    },
-    _light: function _light () {
-      return this.light
+    light: {
+      type: Boolean,
+      default: false
     }
   }
 };
@@ -466,8 +460,8 @@ module.exports = function normalizeComponent (
         'input-group--dirty': this.isDirty,
         'input-group--tab-focused': this.tabFocused,
         'input-group--disabled': this.disabled,
-        'input-group--light': this._light,
-        'input-group--dark': this._dark,
+        'input-group--light': this.light || !this.dark,
+        'input-group--dark': !this.light && this.dark,
         'input-group--error': this.hasError || this.errors.length > 0,
         'input-group--append-icon': this.appendIcon,
         'input-group--prepend-icon': this.prependIcon,
@@ -1429,14 +1423,14 @@ var Avatar = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util_helpers__["
         'btn': true,
         'btn--active': this.isActive,
         'btn--block': this.block,
-        'btn--dark': this._dark,
+        'btn--dark': !this.light && this.dark,
         'btn--default': this.default,
         'btn--disabled': this.disabled,
         'btn--flat': this.flat,
         'btn--floating': this.floating,
         'btn--icon': this.icon,
         'btn--large': this.large,
-        'btn--light': this._light,
+        'btn--light': this.light || !this.dark,
         'btn--loader': this.loading,
         'btn--outline': this.outline,
         'btn--raised': !this.flat,
@@ -1999,16 +1993,13 @@ var CardTitle = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__util_helpers_
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_themeable__ = __webpack_require__(1);
-
-
 var Divider = {
   functional: true,
 
-  mixins: [__WEBPACK_IMPORTED_MODULE_0__mixins_themeable__["a" /* default */]],
-
   props: {
-    inset: Boolean
+    dark: Boolean,
+    inset: Boolean,
+    light: Boolean
   },
 
   render: function render (h, ref) {
@@ -2020,7 +2011,7 @@ var Divider = {
 
     if (props.inset) { data.staticClass += ' divider--inset' }
     if (props.light) { data.staticClass += ' divider--light' }
-    if (props.dark && !props.light) { data.staticClass += ' divider--dark' }
+    if (props.dark) { data.staticClass += ' divider--dark' }
 
     return h('hr', data)
   }
@@ -2081,13 +2072,8 @@ var Divider = {
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_themeable__ = __webpack_require__(1);
-
-
 var Footer = {
   functional: true,
-
-  mixins: [__WEBPACK_IMPORTED_MODULE_0__mixins_themeable__["a" /* default */]],
 
   props: {
     absolute: Boolean,
@@ -2103,8 +2089,6 @@ var Footer = {
 
     if (props.absolute) { data.staticClass += ' footer--absolute' }
     if (props.fixed) { data.staticClass += ' footer--fixed' }
-    if (props.dark && !props.light) { data.staticClass += ' footer--dark' }
-    if (props.light) { data.staticClass += ' footer--light' }
 
     return h('footer', data, children)
   }
@@ -2299,8 +2283,8 @@ var Footer = {
     containerClasses: function containerClasses () {
       return {
         'input-group--selection-controls__container': true,
-        'input-group--selection-controls__container--light': this._light,
-        'input-group--selection-controls__container--dark': this._dark,
+        'input-group--selection-controls__container--light': this.light,
+        'input-group--selection-controls__container--dark': this.dark,
         'input-group--selection-controls__container--disabled': this.disabled,
         'primary--text': this.primary,
         'secondary--text': this.secondary,
@@ -2701,10 +2685,10 @@ var Spacer = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util_helpers__["
     data.staticClass = data.staticClass ? (icon + " icon " + (data.staticClass) + " ") : (icon + " icon ")
 
     var classes = {
-      'icon--dark': props.dark && !props.light,
-      'icon--light': props.light,
+      'icon--dark': !props.light || props.dark,
       'icon--large': props.large,
       'icon--left': props.left,
+      'icon--light': props.light || !props.dark,
       'icon--medium': props.medium,
       'icon--right': props.right,
       'icon--x-large': props.xLarge
@@ -2742,13 +2726,8 @@ var Spacer = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util_helpers__["
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_themeable__ = __webpack_require__(1);
-
-
 /* harmony default export */ exports["a"] = {
   name: 'list',
-
-  mixins: [__WEBPACK_IMPORTED_MODULE_0__mixins_themeable__["a" /* default */]],
 
   data: function data () {
     return {
@@ -2771,9 +2750,7 @@ var Spacer = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util_helpers__["
         'list--two-line': this.twoLine,
         'list--dense': this.dense,
         'list--three-line': this.threeLine,
-        'list--subheader': this.subheader,
-        'list--dark': this._dark,
-        'list--light': this._light,
+        'list--subheader': this.subheader
       }
     }
   },
@@ -2945,15 +2922,13 @@ var Spacer = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util_helpers__["
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_route_link__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__mixins_toggleable__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__mixins_themeable__ = __webpack_require__(1);
-
 
 
 
 /* harmony default export */ exports["a"] = {
   name: 'list-tile',
 
-  mixins: [__WEBPACK_IMPORTED_MODULE_0__mixins_route_link__["a" /* default */], __WEBPACK_IMPORTED_MODULE_1__mixins_toggleable__["a" /* default */], __WEBPACK_IMPORTED_MODULE_2__mixins_themeable__["a" /* default */]],
+  mixins: [__WEBPACK_IMPORTED_MODULE_0__mixins_route_link__["a" /* default */], __WEBPACK_IMPORTED_MODULE_1__mixins_toggleable__["a" /* default */]],
 
   props: {
     activeClass: {
@@ -2969,9 +2944,7 @@ var Spacer = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util_helpers__["
         'list__tile': true,
         'list__tile--active': this.isActive,
         'list__tile--avatar': this.avatar,
-        'list__tile--disabled': this.disabled,
-        'list__tile--dark': this._dark,
-        'list__tile--light': this._light,
+        'list__tile--disabled': this.disabled
       }
     }
   },
@@ -3445,9 +3418,10 @@ var ListTileSubTitle = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util_h
       if (this.auto) { return this.calcLeftAuto() }
 
       var a = this.dimensions.activator
-      var left = a.left
+      var c = this.dimensions.content
+      var left = this.left ? a.right - c.width : a.left
 
-      if (this.offsetX) { left = this.left ? left - a.width : left + a.width }
+      if (this.offsetX) { left += this.left ? -a.width : a.width }
       if (this.nudgeLeft) { left += this.nudgeLeft }
       if (this.nudgeRight) { left -= this.nudgeRight }
 
@@ -3462,9 +3436,9 @@ var ListTileSubTitle = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util_h
 
       var a = this.dimensions.activator
       var c = this.dimensions.content
+      var top = this.top ? a.bottom - c.height : a.top
 
-      var top = this.top ? a.top - c.height : a.top
-      if (this.offsetY) { top = this.top ? top : top + a.height }
+      if (this.offsetY) { top += this.top ? -a.height : a.height }
       if (this.nudgeTop) { top -= this.nudgeTop }
       if (this.nudgeBottom) { top += this.nudgeBottom }
 
@@ -3583,11 +3557,11 @@ var ListTileSubTitle = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util_h
         'navigation-drawer--is-booted': this.isBooted,
         'navigation-drawer--clipped': this.clipped,
         'navigation-drawer--close': !this.isActive,
-        'navigation-drawer--dark': this._dark,
-        'navigation-drawer--light': this._light,
+        'navigation-drawer--dark': this.dark,
         'navigation-drawer--floating': this.floating,
         'navigation-drawer--full-height': this.fullHeight,
         'navigation-drawer--is-mobile': this.isMobile,
+        'navigation-drawer--light': this.light,
         'navigation-drawer--mini-variant': this.miniVariant,
         'navigation-drawer--open': this.isActive,
         'navigation-drawer--permanent': this.permanent,
@@ -3633,6 +3607,7 @@ var ListTileSubTitle = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util_h
       var this$1 = this;
 
       this.checkIfMobile()
+      setTimeout(function () { return (this$1.isBooted = true); }, 0)
 
       if (this.permanent) {
         this.isActive = true
@@ -3641,8 +3616,6 @@ var ListTileSubTitle = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util_h
       else if (!this.value && (this.persistent || this.temporary)) { this.isActive = false }
 
       window.addEventListener('resize', this.onResize, { passive: false })
-
-      setTimeout(function () { return (this$1.isBooted = true); }, 0)
     },
     checkIfMobile: function checkIfMobile () {
       this.isMobile = window.innerWidth <= parseInt(this.mobileBreakPoint)
@@ -3936,8 +3909,8 @@ var defaultDateFormat = function (val) { return new Date(val).toISOString().subs
       'class': {
         'picker picker--date': true,
         'picker--landscape': this.landscape,
-        'picker--dark': this._dark,
-        'picker--light': this._light
+        'picker--dark': this.dark,
+        'picker--light': this.light && !this.dark
       }
     }, children)
   }
@@ -4112,8 +4085,8 @@ var defaultDateFormat = function (val) { return new Date(val).toISOString().subs
       'class': {
         'picker picker--time': true,
         'picker--landscape': this.landscape,
-        'picker--dark': this._dark,
-        'picker--light': this._light,
+        'picker--dark': this.dark,
+        'picker--light': this.light && !this.dark,
         'picker--time--hours': this.selectingHour
       }
     }, children)
@@ -4720,7 +4693,7 @@ var defaultDateFormat = function (val) { return new Date(val).toISOString().subs
       inputValue: this.value,
       isBooted: false,
       lastItem: 20,
-      menuActive: false
+      isActive: false
     }
   },
 
@@ -4808,7 +4781,7 @@ var defaultDateFormat = function (val) { return new Date(val).toISOString().subs
       this.validate()
       this.autocomplete && this.$nextTick(this.$refs.menu.updateDimensions)
     },
-    menuActive: function menuActive (val) {
+    isActive: function isActive (val) {
       this.isBooted = true
       this.lastItem += !val ? 20 : 0
 
@@ -4853,7 +4826,7 @@ var defaultDateFormat = function (val) { return new Date(val).toISOString().subs
     onScroll: function onScroll () {
       var this$1 = this;
 
-      if (!this.menuActive) {
+      if (!this.isActive) {
         setTimeout(function () { return (this$1.content.scrollTop = 0); }, 50)
       } else {
         var showMoreItems = (
@@ -4899,7 +4872,7 @@ var defaultDateFormat = function (val) { return new Date(val).toISOString().subs
       ref: 'activator',
       directives: [{
         name: 'click-outside',
-        value: function () { return (this$1.menuActive = false); }
+        value: function () { return (this$1.isActive = false); }
       }],
       on: {
         keydown: function (e) {
@@ -4972,9 +4945,9 @@ var defaultDateFormat = function (val) { return new Date(val).toISOString().subs
           offsetY: this.autocomplete || this.offset,
           maxHeight: this.maxHeight,
           activator: this.$refs.activator,
-          value: this.menuActive
+          value: this.isActive
         },
-        on: { input: function (val) { return (this$1.menuActive = val); } }
+        on: { input: function (val) { return (this$1.isActive = val); } }
       }
 
       return this.$createElement('v-menu', data, [this.genList()])
@@ -4992,7 +4965,7 @@ var defaultDateFormat = function (val) { return new Date(val).toISOString().subs
             input: function (e) { return (this$1.searchValue = e.target.value); },
             keyup: function (e) {
               if (e.keyCode === 27) {
-                this$1.menuActive = false
+                this$1.isActive = false
                 e.target.blur()
               }
             }
@@ -5829,7 +5802,7 @@ var Subheader = {
 
     data.staticClass = data.staticClass ? ("subheader " + (data.staticClass)) : 'subheader'
     if (props.inset) { data.staticClass += ' subheader--inset' }
-    if (props.dark || !props.light) { data.staticClass += ' subheader--dark' }
+    if (props.dark && !props.light) { data.staticClass += ' subheader--dark' }
     if (props.light) { data.staticClass += ' subheader--light' }
 
     return h('li', data, children)
@@ -6523,8 +6496,8 @@ var TableOverflow = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util_help
         'tabs--grow': this.grow,
         'tabs--icons': this.icons,
         'tabs--scroll-bars': this.scrollBars,
-        'tabs--dark': this._dark,
-        'tabs--light': this._light,
+        'tabs--dark': !this.light && this.dark,
+        'tabs--light': this.light || !this.dark
       }
     }
   },
@@ -6920,7 +6893,7 @@ var TabsItems = {
 
     data.staticClass = data.staticClass ? ("toolbar " + (data.staticClass)) : 'toolbar'
     if (props.fixed) { data.staticClass += ' toolbar--fixed' }
-    if (props.dark && !props.light) { data.staticClass += ' toolbar--dark' }
+    if (props.dark) { data.staticClass += ' toolbar--dark' }
     if (props.light) { data.staticClass += ' toolbar--light' }
 
     return h('nav', data, children)
@@ -7423,8 +7396,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
         'btn-dropdown--editable': this.editable,
         'btn-dropdown--overflow': this.overflow || this.segmented || this.editable,
         'btn-dropdown--segmented': this.segmented,
-        'btn-dropdown--light': this._light,
-        'btn-dropdown--dark': this._dark
+        'btn-dropdown--light': this.light || !this.dark,
+        'btn-dropdown--dark': !this.light && this.dark
       }
     },
 
@@ -7796,7 +7769,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 Object.defineProperty(exports, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_expand_transition__ = __webpack_require__(9);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__mixins_toggleable__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__mixins_themeable__ = __webpack_require__(1);
 //
 //
 //
@@ -7822,7 +7794,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 //
 //
 //
-
 
 
 
@@ -7830,7 +7801,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /* harmony default export */ exports["default"] = {
   name: 'expansion-panel-content',
 
-  mixins: [__WEBPACK_IMPORTED_MODULE_0__mixins_expand_transition__["a" /* default */], __WEBPACK_IMPORTED_MODULE_1__mixins_toggleable__["a" /* default */], __WEBPACK_IMPORTED_MODULE_2__mixins_themeable__["a" /* default */]],
+  mixins: [__WEBPACK_IMPORTED_MODULE_0__mixins_expand_transition__["a" /* default */], __WEBPACK_IMPORTED_MODULE_1__mixins_toggleable__["a" /* default */]],
 
   data: function data () {
     return {
@@ -7846,12 +7817,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
     classes: function classes () {
       return {
         'expansion-panel__header--active': this.isActive
-      }
-    },
-    panelClasses: function panelClasses () {
-      return {
-        'expansion-panel--dark': this._dark,
-        'expansion-panel--light': this._light,
       }
     }
   },
@@ -7871,7 +7836,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 
   methods: {
     closeConditional: function closeConditional (e) {
-      return this.$parent.$el.contains(e.target) &&
+      return this.$parent.$el.contains(e.target) && 
         !this.$parent.expand &&
         !this.$el.contains(e.target)
     },
@@ -8544,8 +8509,8 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "type": _vm.editable ? 'text' : 'button',
       "label": _vm.label,
-      "light": _vm._light,
-      "dark": _vm._dark,
+      "light": _vm.light || !_vm.dark,
+      "dark": !_vm.light && _vm.dark,
       "single-line": "single-line",
       "append-icon": "arrow_drop_down"
     },
@@ -8580,8 +8545,8 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       }
     }, [(option.action) ? _c('v-list-tile-action', [_c('v-icon', {
       attrs: {
-        "light": _vm._light,
-        "dark": _vm._dark
+        "light": _vm.light || !_vm.dark,
+        "dark": !_vm.light && _vm.dark
       }
     }, [_vm._v(_vm._s(option.action))])], 1) : _vm._e(), (option.text) ? _c('v-list-tile-content', [_c('v-list-tile-title', [_vm._v(_vm._s(option.text))])], 1) : _vm._e()], 1)], 1)
   }))], 1)], 1)
@@ -8710,9 +8675,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
 /***/ function(module, exports) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('li', {
-    class: _vm.panelClasses
-  }, [(_vm.$slots.header) ? _c('div', {
+  return _c('li', [(_vm.$slots.header) ? _c('div', {
     directives: [{
       name: "click-outside",
       rawName: "v-click-outside",
@@ -8871,8 +8834,8 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, _vm._l((_vm.options), function(option, index) {
     return _c('v-btn', {
       attrs: {
-        "dark": _vm._dark,
-        "light": _vm._light,
+        "dark": _vm.dark,
+        "light": _vm.light,
         "data-selected": _vm.isSelected(option),
         "data-index": index,
         "data-only-child": _vm.isSelected(option) && (!_vm.multiple || _vm.inputValue.length === 1),
@@ -8890,8 +8853,8 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       }
     }) : _vm._e(), (option.icon) ? _c('v-icon', {
       attrs: {
-        "dark": _vm._dark,
-        "light": _vm._light
+        "dark": _vm.dark,
+        "light": _vm.light
       }
     }, [_vm._v(_vm._s(option.icon))]) : _vm._e()], 1)
   }))
