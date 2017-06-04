@@ -4,7 +4,8 @@
 
 .toolbar
   align-items: center
-  background-color: $theme.primary
+  color: $toolbar-text-color
+  background-color: $toolbar-background-color
   display: flex
   flex-wrap: wrap
   height: $toolbar-height
@@ -150,3 +151,15 @@
     &--light.input-group--focused.input-group--append-icon
       .icon
         color: rgba($material-dark.fg-color, $material-dark.active-icon-percent)
+
+//theme scheme color defaults
+for color_name, color_value in $theme
+  text_colors_hash = lookup('$' + $theme-text[color_name+'-text'] + '-text-colors')
+  .toolbar
+    &.{color_name}
+      background-color color_value
+      border-color: color_value
+      if text_colors_hash
+        color: text_colors_hash.default
+        .btn, .btn .icon, .toolbar__item
+          color: text_colors_hash.default

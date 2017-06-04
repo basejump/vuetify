@@ -1,7 +1,7 @@
 /** Base Spec */
 .btn
   align-items: center
-  background: $grey.lighten-2
+  background: $button-background-color
   border-radius: $button-border-radius
   color: $button-color
   display: inline-flex
@@ -35,10 +35,14 @@
   &.btn--disabled
     box-shadow: none !important
     pointer-events: none
-    opacity: .4
+    //opacity: .4
+    opacity: 1
+
+    &:not(.btn--flat):not(.btn--icon)
+      background-color: $button-dark-overlay !important
 
     &:not(.btn--loader)
-      color: $button-dark-disabled-color
+      color: $button-dark-disabled-color !important
 
 
 /** Content */
@@ -60,19 +64,19 @@
     background-color: transparent !important
     box-shadow: none !important
 
+    &:hover:after
+      background-color: $button-dark-overlay
+
+    &.btn--disabled
+      color: $button-dark-disabled-color
+
+    //overrides with light text setting
     &.btn--light
       &:hover:after
         background-color: $button-light-overlay
 
       &.btn--disabled
         color: $button-light-disabled-color
-
-    &.btn--dark
-      &:hover:after
-        background-color: $button-dark-overlay
-
-      &.btn--disabled
-        color: $button-dark-disabled-color
 
   &--raised
     will-change: box-shadow
@@ -90,9 +94,11 @@
     width: $button-height
     min-width: 0
     padding: 0
-    
-    .icon
-      color: inherit
+
+
+    //should always be its setting of 54% 000000
+    //.icon
+    //  color: inherit//$icon-color-dark
 
     &:after
       border-radius: 50%
@@ -109,7 +115,7 @@
       background-color: transparent !important
       color: $button-light-disabled-color !important
       pointer-events: none
-      
+
     &.btn--small
       width: $button-small-height
 
@@ -149,6 +155,9 @@
         height: $button-floating-large-icon-width
         width: $button-floating-large-icon-width
 
+.btn
+  &:hover:after
+    background-color: $button-dark-overlay
 
 /** Themes */
 .btn
@@ -166,19 +175,22 @@
       &:not(.btn--flat):not(.btn--icon)
         background-color: $button-light-overlay !important
 
-  &--dark
-    color: $color-dark
-
-    &:hover:after
-      background-color: $button-dark-overlay
+      .icon
+        color: $icon-color-light-inactive !important
+  //force dark color, override theme
+  //&--dark
+  //  color: $color-dark
 
     // Do not show disabled styles when using loader
-    &.btn--disabled:not(.btn--loader)
-      color: $button-dark-disabled-color !important
-      opacity: 1
+  &.btn--disabled:not(.btn--loader)
+    color: $button-dark-disabled-color !important
+    opacity: 1
 
-      &:not(.btn--flat):not(.btn--icon)
-        background-color: $button-dark-overlay !important
+    &:not(.btn--flat):not(.btn--icon)
+      background-color: $button-dark-overlay !important
+
+    .icon
+      color: $icon-color-dark-inactive !important
 
 /** Sizes */
 .btn
@@ -229,6 +241,9 @@
     &:hover
       box-shadow: none
 
+    .icon
+      color: inherit//$icon-color-dark
+
   &--block
     display: flex
     flex: 1
@@ -250,3 +265,26 @@
 
     &--left
       margin-right: 16px
+
+
+//theme scheme, this might not be needed as the scheme (such as primary) uses important on it and we could do that with the
+//text-color too
+for color_name, color_value in $theme
+  text_colors_hash = lookup('$' + $theme-text[color_name+'-text'] + '-text-colors')
+  .btn
+    &.{color_name}
+      background-color color_value
+      border-color: color_value
+      if text_colors_hash
+        color: text_colors_hash.default
+
+  .btn:not(.btn--flat):not(.btn--disabled)
+    &.{color_name}
+      if text_colors_hash
+        .icon
+          color: text_colors_hash.icon
+
+  .btn.btn--icon:not(.btn--raised), .btn.btn--flat, .btn.btn--outline
+    &.{color_name}
+      .icon
+        color: color_value

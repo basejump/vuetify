@@ -29,3 +29,18 @@ global-color-accent(color_name, color_value)
 
 .dark--text
   color $color-dark
+
+global-color-text-default(color_name, color_value, text_colors_hash)
+
+  .{color_name}
+    background-color color_value !important
+    border-color: color_value !important
+    if text_colors_hash {
+      color: text_colors_hash.default
+    }
+  .{color_name}--text
+    color color_value !important
+
+  .{color_name}--after
+    &:after
+      background: color_value !important

@@ -1,5 +1,12 @@
 for color_name, color_value in $theme
-  global-color(color_name, color_value)
+  warn(color_name)
+  text_colors_hash = $theme-text[color_name+'-text']
+  if (text_colors_hash) {
+    text_colors_hash = lookup('$'+text_colors_hash+'-text-colors')
+  }
+  global-color-text-default(color_name, color_value, text_colors_hash)
+
+
 
 for color_name, color_value in $shades
   global-color(color_name, color_value)
@@ -9,6 +16,6 @@ if ($color-pack)
     for color_type, color_value in color
       if color_type == 'base'
         global-color(color_name, color_value)
-        
+
       else if color_type != 'shades'
         global-color-accent(color_name, color_value)

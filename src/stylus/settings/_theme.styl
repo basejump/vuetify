@@ -6,22 +6,12 @@ $body-font-family := 'Roboto', sans-serif
 $font-size-root := 14px
 $line-height-root := 1.5
 
-$theme := {
-  primary: $blue.darken-2
-  accent: $blue.accent-2
-  secondary: $grey.darken-3
-  info: $blue.base
-  warning: $amber.base
-  error: $red.accent-2
-  success: $green.base
-}
-
 // Material Design - https://material.io/guidelines/style/color.html#color-usability
 // ============================================================
-$material-light := {
-  bg-color: #fff
-  fg-color: #000
-  text-color: #000
+$material-default := {
+  bg-color: #fff //background color
+  dark-text-color: #000
+  light-text-color: #fff
   primary-text-percent: .87
   secondary-text-percent: .54
   disabledORhints-text-percent: .38
@@ -29,7 +19,66 @@ $material-light := {
   active-icon-percent: .54
   inactive-icon-percent: .38
 }
-$material-dark := {
+//this should be an empty map for users to override, here for compatibilty while we refactor
+$material-light := {
+  fg-color: #000 //this should go away
+  text-color: #000 //this should go away
+}
+$material-light = merge($material-default , $material-light)
+
+/* Text colors according to light vs dark and text type */
+//https://material.io/guidelines/style/typography.html#typography-other-typographic-guidelines
+//https://material.io/guidelines/style/color.html#color-usability
+//other ideas from https://github.com/material-components/material-components-web/tree/master/packages/mdc-theme
+$dark-text-colors := {
+  default: rgba($material-default.dark-text-color, $material-default.primary-text-percent) //primary default
+  secondary: rgba($material-default.dark-text-color, $material-default.secondary-text-percent)
+  hint: rgba($material-default.dark-text-color, $material-default.disabledORhints-text-percent)
+  divider: rgba($material-default.dark-text-color, $material-default.divider-percent)
+  disabled: rgba($material-default.dark-text-color, $material-default.disabledORhints-text-percent)
+  icon: rgba($material-default.dark-text-color, $material-default.active-icon-percent)
+  icon-inactive: rgba($material-default.dark-text-color, $material-default.inactive-icon-percent)
+}
+$light-text-colors := {
+  default: $material-default.light-text-color //primary default
+  secondary: rgba($material-default.light-text-color, .7)
+  hint: rgba($material-default.light-text-color, .5)
+  divider: rgba($material-default.light-text-color, .12)
+  disabled: rgba($material-default.light-text-color, .5)
+  icon: rgba($material-default.light-text-color, 1)
+  icon-inactive: rgba($material-default.light-text-color, .5)
+}
+
+//NOTE: for toggle icons see here for special handling https://material.io/guidelines/components/buttons.html#buttons-toggle-buttons
+//TODO change this name to theme-scheme, color-scheme or just scheme as thats what it really is
+$theme = {
+  default-grey: $grey.lighten-2, //default background for buttons, nav-drawer, toolbar
+  primary: $blue.darken-2,
+  secondary: $grey.darken-3,
+  accent: $blue.accent-2,
+  info: $blue.base,
+  warning: $amber.base,
+  error: $red.accent-2,
+  success: $green.base
+}
+//by default we use dark text so only override for light text colors
+$theme-text = {
+  //grey: "dark"
+  primary-text: "light"
+  secondary-text: "light"
+  //info-text: "dark"
+  //warning-text: "dark"
+  error-text: "light"
+  success-text: "light"
+}
+//$theme['primary-text']=$light-text-colors
+//$theme = merge(, $theme is defined ? $theme : {} )
+
+
+
+
+//TODO once we get the default theme setup based on guideline
+$material-dark-defaults := {
   bg-color: #303030
   fg-color: #fff
   text-color: #fff
@@ -40,7 +89,10 @@ $material-dark := {
   active-icon-percent: 1
   inactive-icon-percent: .50
 }
+$material-dark := {}
+$material-dark = merge($material-dark-defaults , $material-dark)
 
 // Default Material Theme
 // ============================================================
 $material-theme := $material-light
+
