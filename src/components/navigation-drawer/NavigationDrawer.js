@@ -42,7 +42,7 @@ export default {
         'navigation-drawer--is-booted': this.isBooted,
         'navigation-drawer--clipped': this.clipped,
         'navigation-drawer--close': !this.isActive,
-        'navigation-drawer--dark': this.dark,
+        //'navigation-drawer--dark': this.dark,
         'navigation-drawer--floating': this.floating,
         'navigation-drawer--full-height': this.fullHeight,
         'navigation-drawer--is-mobile': this.isMobile,
