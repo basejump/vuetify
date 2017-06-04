@@ -734,6 +734,7 @@ module.exports = function normalizeComponent (
 
       var input = this.inputValue
       if (Array.isArray(input)) {
+        input = input.slice()
         var i = input.indexOf(this.value)
 
         if (i === -1) {
@@ -822,9 +823,20 @@ module.exports = function normalizeComponent (
 
       var overlay = document.createElement('div')
       overlay.className = 'overlay'
+      overlay.onclick = function () {
+        if (this$1.permanet) { return }
+        else if (!this$1.persistent) { this$1.isActive = false }
+        else if (this$1.isMobile) { this$1.isActive = false }
+      }
+
       if (this.absolute) { overlay.className += ' overlay--absolute' }
 
-      this.$el.parentNode.insertBefore(overlay, this.$el.nextSibling)
+      this.hideScroll()
+
+      var app = this.$el.closest('[data-app]')
+      app &&
+        app.appendChild(overlay) ||
+        document.body.appendChild(overlay)
 
       setTimeout(function () {
         overlay.className += ' overlay--active'
@@ -839,9 +851,19 @@ module.exports = function normalizeComponent (
       __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util_helpers__["f" /* addOnceEventListener */])(this.overlay, 'transitionend', function () {
         this$1.overlay && this$1.overlay.remove()
         this$1.overlay = null
+        this$1.showScroll()
       })
 
       this.overlay.className = this.overlay.className.replace('overlay--active', '')
+    },
+    hideScroll: function hideScroll () {
+      document.documentElement.style.overflowY = 'hidden'
+      window.innerWidth > 1024 &&
+        (document.documentElement.style.paddingRight = '17px')
+    },
+    showScroll: function showScroll () {
+      document.documentElement.style.overflowY = null
+      document.documentElement.style.paddingRight = null
     }
   }
 };
@@ -1423,14 +1445,14 @@ var Avatar = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util_helpers__["
         'btn': true,
         'btn--active': this.isActive,
         'btn--block': this.block,
-        'btn--dark': !this.light && this.dark,
+        //'btn--dark-text': !this.light && this.dark,
         'btn--default': this.default,
         'btn--disabled': this.disabled,
         'btn--flat': this.flat,
         'btn--floating': this.floating,
         'btn--icon': this.icon,
         'btn--large': this.large,
-        'btn--light': this.light || !this.dark,
+        'btn--light-text': this.light || !this.dark,
         'btn--loader': this.loading,
         'btn--outline': this.outline,
         'btn--raised': !this.flat,
@@ -1874,6 +1896,10 @@ var CardTitle = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__util_helpers_
 
   mixins: [__WEBPACK_IMPORTED_MODULE_0__mixins_bootable__["a" /* default */], __WEBPACK_IMPORTED_MODULE_1__mixins_overlayable__["a" /* default */], __WEBPACK_IMPORTED_MODULE_2__mixins_toggleable__["a" /* default */]],
 
+  data: function () { return ({
+    app: null
+  }); },
+
   props: {
     disabled: Boolean,
     persistent: Boolean,
@@ -1916,10 +1942,27 @@ var CardTitle = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__util_helpers_
     isActive: function isActive (val) {
       if (val) {
         !this.fullscreen && !this.hideOverlay && this.genOverlay()
+        this.fullscreen && this.hideScroll()
       } else {
-        this.removeOverlay()
+        if (!this.fullscreen) { this.removeOverlay() }
+        else { this.showScroll() }
       }
     }
+  },
+
+  mounted: function mounted () {
+    var this$1 = this;
+
+    this.app = document.querySelector('[data-app]')
+    this.$nextTick(function () {
+      this$1.app && this$1.app.appendChild(this$1.$refs.content)
+    })
+  },
+
+  beforeDestroy: function beforeDestroy () {
+    this.app &&
+      this.app.contains(this.$refs.content) &&
+      this.app.removeChild(this.$refs.content)
   },
 
   methods: {
@@ -1965,7 +2008,8 @@ var CardTitle = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__util_helpers_
     }, [h('div', data, [this.$slots.default])])
 
     children.push(h('div', {
-      'class': 'dialog__content'
+      'class': 'dialog__content',
+      ref: 'content'
     }, [dialog]))
 
     return h('div', {
@@ -2685,7 +2729,7 @@ var Spacer = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util_helpers__["
     data.staticClass = data.staticClass ? (icon + " icon " + (data.staticClass) + " ") : (icon + " icon ")
 
     var classes = {
-      'icon--dark': !props.light || props.dark,
+      //'icon--dark': !props.light || props.dark,
       'icon--large': props.large,
       'icon--left': props.left,
       'icon--light': props.light || !props.dark,
@@ -3189,6 +3233,7 @@ var ListTileSubTitle = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util_h
   methods: {
     activate: function activate () {
       this.initWindow()
+      this.getTiles()
       this.updateDimensions()
       this.$nextTick(this.startTransition)
     },
@@ -3218,7 +3263,7 @@ var ListTileSubTitle = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util_h
       on: {
         keydown: function (e) {
           if (e.keyCode === 27) { this$1.isActive = false }
-          if ([40, 38].includes(e.keyCode)) { this$1.changeListIndex(e) }
+          else { this$1.changeListIndex(e) }
         }
       }
     }
@@ -3333,27 +3378,51 @@ var ListTileSubTitle = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util_h
 "use strict";
 /* harmony default export */ exports["a"] = {
   data: function () { return ({
-    listIndex: 0,
-    isUsingKeys: false
+    listIndex: -1,
+    isUsingKeys: false,
+    tiles: []
   }); },
 
   watch: {
-    listIndex: function listIndex () {
-      this.isUsingKeys = true
+    isActive: function isActive (val) {
+      if (!val) { this.listIndex = -1 }
+    },
+    listIndex: function listIndex (next, prev) {
+      // For infinite scroll, re-evaluate children
+      next === this.tiles.length - 1 && this.getTiles()
+
+      if (next !== -1) {
+        this.tiles[next].classList.add('list__tile--highlighted')
+        this.$refs.content.scrollTop = next * 48
+      }
+
+      prev !== -1 && this.tiles[prev].classList.remove('list__tile--highlighted')
     }
   },
 
   methods: {
     changeListIndex: function changeListIndex (e) {
-      if (e.keyCode === 40 && this.listIndex > 0) {
-        e.preventDefault()
-        this.listIndex--
-      }
-      if (e.keyCode === 38 && this.listIndex < this.tileLength - 1) {
-        e.preventDefault()
-        this.listIndex++
-      }
-      console.log(this.listIndex)
+      [40, 38].includes(e.keyCode) && e.preventDefault()
+
+      if (this.listIndex === -1) { this.setActiveListIndex() }
+      if ([27, 9].includes(e.keyCode)) { this.isActive = false }
+      else if (e.keyCode === 40 && this.listIndex < this.tiles.length - 1) { this.listIndex++ }
+      else if (e.keyCode === 38 && this.listIndex > 0) { this.listIndex-- }
+      else if (e.keyCode === 13 && this.listIndex !== -1) { this.tiles[this.listIndex].click() }
+      else if (e.keyCode === 13) { this.isActive = true }
+    },
+    getTiles: function getTiles () {
+      this.tiles = this.$refs.content.querySelectorAll('.list__tile')
+    },
+    setActiveListIndex: function setActiveListIndex () {
+      var this$1 = this;
+
+      this.tiles.forEach(function (t, i) {
+        if (t.classList.contains('list__tile--active')) {
+          this$1.listIndex = i
+          return
+        }
+      })
     }
   }
 };
@@ -3388,10 +3457,7 @@ var ListTileSubTitle = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util_h
     calcTopAuto: function calcTopAuto () {
       if (!this.$refs.content) { return this.calcTop(true) }
 
-      var tiles = this.$refs.content.querySelectorAll('.list__tile')
-      var selectedIndex = Array.from(tiles).findIndex(function (n) { return n.classList.contains('list__tile--active'); })
-
-      this.tileLength = tiles.length
+      var selectedIndex = Array.from(this.tiles).findIndex(function (n) { return n.classList.contains('list__tile--active'); })
 
       if (selectedIndex === -1) {
         this.selectedIndex = null
@@ -3403,7 +3469,7 @@ var ListTileSubTitle = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util_h
       var actingIndex = selectedIndex
 
       var offsetPadding = -16
-      this.stopIndex = tiles.length - 4
+      this.stopIndex = this.tiles.length - 4
       if (selectedIndex > this.startIndex && selectedIndex < this.stopIndex) {
         actingIndex = 2
         offsetPadding = 24
@@ -4875,10 +4941,7 @@ var defaultDateFormat = function (val) { return new Date(val).toISOString().subs
         value: function () { return (this$1.isActive = false); }
       }],
       on: {
-        keydown: function (e) {
-          if (e.keyCode === 27) { this$1.$refs.menu.isActive = false }
-          if ([40, 38].includes(e.keyCode)) { this$1.$refs.menu.changeListIndex(e) }
-        }
+        keydown: function (e) { return this$1.$refs.menu.changeListIndex(e); }
       }
     })
   }
@@ -5576,9 +5639,11 @@ var defaultDateFormat = function (val) { return new Date(val).toISOString().subs
         : 'v-tab-transition'
     },
     styles: function styles () {
-      return this.isVertical
-        ? { 'height': ((this.height) + "px") }
-        : {}
+      if (!this.isVertical) { return {} }
+
+      return {
+        height: !isNaN(this.height) ? ((this.height) + "px") : this.height
+      }
     },
     wrapperClasses: function wrapperClasses () {
       return {
@@ -5601,7 +5666,28 @@ var defaultDateFormat = function (val) { return new Date(val).toISOString().subs
     }
   },
 
+  mounted: function mounted () {
+    this.$refs.wrapper.addEventListener(
+      'transitionend',
+      this.onTransition,
+      false
+    )
+  },
+
+  beforeDestroy: function beforeDestroy () {
+    this.$refs.wrapper.removeEventListener(
+      'transitionend',
+      this.onTransition,
+      false
+    )
+  },
+
   methods: {
+    onTransition: function onTransition () {
+      if (!this.isActive) { return }
+
+      this.height = 'auto'
+    },
     enter: function enter () {
       var this$1 = this;
 
@@ -5614,10 +5700,14 @@ var defaultDateFormat = function (val) { return new Date(val).toISOString().subs
 
       this.height = 0
 
+      // Give the collapsing element time to collapse
       setTimeout(function () { return (this$1.height = scrollHeight); }, 450)
     },
     leave: function leave () {
-      this.height = 0
+      var this$1 = this;
+
+      this.height = this.$refs.wrapper.clientHeight
+      setTimeout(function () { return (this$1.height = 0); }, 0)
     },
     toggle: function toggle (step, reverse) {
       this.isActive = step.toString() === this.step.toString()
@@ -5880,7 +5970,7 @@ var Subheader = {
       type: String,
       default: 'Rows per page:'
     },
-    selectAll: Boolean,
+    selectAll: [Boolean, String],
     search: {
       required: false
     },
@@ -5934,7 +6024,7 @@ var Subheader = {
       default: null
     },
     loading: {
-      type: Boolean,
+      type: [Boolean, String],
       default: false
     },
     selectedKey: {
@@ -6323,13 +6413,17 @@ var TableOverflow = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util_help
                 ? this.itemsLength
                 : this.pageStop
 
-        pagination = (this.pageStart + 1) + "-" + stop + " of " + (this.itemsLength)
+        pagination = this.$scopedSlots.pageText
+          ? this.$scopedSlots.pageText({
+            pageStart: this.pageStart,
+            pageStop: this.itemsLength
+          })
+          : ((this.pageStart + 1) + "-" + stop + " of " + (this.itemsLength))
       }
 
       return this.$createElement('div', {
-        'class': 'datatable__actions__pagination',
-        domProps: { innerHTML: pagination }
-      })
+        'class': 'datatable__actions__pagination'
+      }, [pagination])
     },
     genActions: function genActions () {
       return [this.$createElement('div', {
@@ -6366,8 +6460,15 @@ var TableOverflow = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util_help
 
       var children = this.headers.map(function (o) { return this$1.genHeader(o); })
       var checkbox = this.$createElement('v-checkbox', {
-        class: 'primary--text',
         props: {
+          dark: this.dark,
+          light: this.light,
+          primary: this.selectAll === 'primary',
+          secondary: this.selectAll === 'secondary',
+          success: this.selectAll === 'success',
+          info: this.selectAll === 'info',
+          warning: this.selectAll === 'warning',
+          error: this.selectAll === 'error',
           hideDetails: true,
           inputValue: this.all,
           indeterminate: this.indeterminate
@@ -6425,13 +6526,31 @@ var TableOverflow = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util_help
 
 "use strict";
 /* harmony default export */ exports["a"] = {
+  data: function data () {
+    return {
+      color: ''
+    }
+  },
+
+  watch: {
+    loading: function loading (val) {
+      if (!!val) { this.color = val }
+    }
+  },
+
   methods: {
     genTProgress: function genTProgress () {
       var loader = this.$createElement('v-progress-linear', {
         props: {
+          primary: this.color === 'primary',
+          secondary: this.color === 'secondary',
+          success: this.color === 'success',
+          info: this.color === 'info',
+          warning: this.color === 'warning',
+          error: this.color === 'error',
           indeterminate: true,
           height: 3,
-          active: this.loading
+          active: !!this.loading
         }
       })
 
@@ -6513,7 +6632,10 @@ var TableOverflow = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util_help
 
       var activators = this.$slots.activators
 
-      if (!activators || !activators.length || !activators[0].componentInstance.$children) { return }
+      if (!activators ||
+        !activators.length ||
+        (activators.length &&
+          !activators[0].componentInstance.$children)) { return }
 
       activators[0].componentInstance.$children
         .filter(function (i) { return i.$options._componentTag === 'v-tabs-item'; })
@@ -6792,7 +6914,6 @@ var TableOverflow = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util_help
         'tabs__item--disabled': this.disabled
       }
     },
-
     action: function action () {
       var to = this.to || this.href
 
@@ -6800,17 +6921,36 @@ var TableOverflow = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util_help
 
       return to.replace('#', '')
     },
-
     tabs: function tabs () {
       return __WEBPACK_IMPORTED_MODULE_0__util_helpers__["d" /* closestParentTag */].call(this, 'v-tabs')
     }
   },
 
+  watch: {
+    '$route': function $route () {
+      this.router && this.callSlider()
+    }
+  },
+
+  mounted: function mounted () {
+    this.callSlider()
+  },
+
   methods: {
+    callSlider: function callSlider () {
+      var this$1 = this;
+
+      setTimeout(function () {
+        this$1.$el.firstChild.classList.contains('tabs__item--active') &&
+        this$1.tabs.slider(this$1.$el)
+      }, 0)
+    },
     click: function click (e) {
       e.preventDefault()
 
-      this.tabs.tabClick(this.action)
+      !this.router &&
+        this.tabs.tabClick(this.action) ||
+        this.callSlider()
     },
 
     toggle: function toggle (action) {
@@ -6875,12 +7015,14 @@ var TabsItems = {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_themeable__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__mixins_contextualable__ = __webpack_require__(4);
+
 
 
 /* harmony default export */ exports["a"] = {
   functional: true,
 
-  mixins: [__WEBPACK_IMPORTED_MODULE_0__mixins_themeable__["a" /* default */]],
+  mixins: [__WEBPACK_IMPORTED_MODULE_0__mixins_themeable__["a" /* default */], __WEBPACK_IMPORTED_MODULE_1__mixins_contextualable__["a" /* default */]],
 
   props: {
     fixed: Boolean
@@ -6893,9 +7035,13 @@ var TabsItems = {
 
     data.staticClass = data.staticClass ? ("toolbar " + (data.staticClass)) : 'toolbar'
     if (props.fixed) { data.staticClass += ' toolbar--fixed' }
-    if (props.dark) { data.staticClass += ' toolbar--dark' }
-    if (props.light) { data.staticClass += ' toolbar--light' }
-
+    //data.staticClass += props.light ? ' toolbar--light' : ' toolbar--dark'
+    console.log("props", props)
+    var tones = ['primary', 'secondary', 'success', 'info', 'warning', 'error']
+    tones.forEach(function (tone) {
+      console.log("prop", props[tone])
+      if(props[tone]) { data.staticClass += (' '+ tone) }
+    })
     return h('nav', data, children)
   }
 };
@@ -7077,7 +7223,8 @@ function directive (e, el, binding, v) {
 
   if (binding.value) { cb = binding.value }
 
-  if ((e && e.target) &&
+  if (v.context.isActive &&
+    (e && e.target) &&
     (e.target !== el && !el.contains(e.target)) &&
     cb(e)
   ) {
