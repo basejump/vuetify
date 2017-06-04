@@ -1,5 +1,7 @@
 .toolbar
   align-items: center
+  color: $toolbar-text-color
+  background-color: $toolbar-background-color
   display: flex
   flex-wrap: wrap
   height: $toolbar-height
@@ -100,3 +102,15 @@
   .input-group
     margin: 0 0 0 16px
     flex: 1
+
+//theme scheme color defaults
+for scheme_name, color_value in $scheme-classes
+  text_colors_hash = lookup('$' + $scheme-config[scheme_name+'-text'] + '-text-colors')
+  .toolbar
+    &.{scheme_name}
+      background-color color_value
+      border-color: color_value
+      if text_colors_hash
+        color: text_colors_hash.default
+        .btn, .btn .icon, .toolbar__item
+          color: text_colors_hash.default
