@@ -10,4 +10,4 @@ to setup schemes.
 In Vuetify there is a Contextuable mixin that is basically a way to set the scheme name on the componenet. 
 I would propose its renamed to scheme for consitency. 
 A theme deals with layout, location, sizing and more laf than just the color pallete. 
-
+Basically whats configured in the _variables.style is the "theme" and how is setup out of the box.
