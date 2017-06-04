@@ -19,7 +19,7 @@ export default {
     data.staticClass = data.staticClass ? `${icon} icon ${data.staticClass} ` : `${icon} icon `
 
     const classes = {
-      'icon--dark': !props.light || props.dark,
+      //'icon--dark': !props.light || props.dark,
       'icon--large': props.large,
       'icon--left': props.left,
       'icon--light': props.light || !props.dark,

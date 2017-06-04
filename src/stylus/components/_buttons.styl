@@ -1,7 +1,7 @@
 /** Base Spec */
 .btn
   align-items: center
-  background: $grey.lighten-2
+  background: $button-background-color
   border-radius: $button-border-radius
   color: $button-color
   display: inline-flex
@@ -35,10 +35,24 @@
   &.btn--disabled
     box-shadow: none !important
     pointer-events: none
-    opacity: .4
+    //opacity: .4
+    opacity: 1
+
+    &:not(.btn--flat):not(.btn--icon)
+      background-color: $button-dark-overlay !important
 
     &:not(.btn--loader)
-      color: $button-dark-disabled-color
+      color: $button-dark-disabled-color !important
+
+  &.btn--disabled:not(.btn--loader)
+    color: $button-dark-disabled-color !important
+    opacity: 1
+
+    &:not(.btn--flat):not(.btn--icon)
+      background-color: $button-dark-overlay !important
+
+    .icon
+      color: $icon-color-dark-inactive !important
 
 
 /** Content */
@@ -60,6 +74,13 @@
     background-color: transparent !important
     box-shadow: none !important
 
+    &:hover:after
+      background-color: $button-dark-overlay
+
+    &.btn--disabled
+      color: $button-dark-disabled-color
+
+    //overrides with light text setting
     &.btn--light
       &:hover:after
         background-color: $button-light-overlay
@@ -83,7 +104,7 @@
     width: $button-height
     min-width: 0
     padding: 0
-    
+
     .icon
       color: inherit
 
@@ -102,7 +123,7 @@
       background-color: transparent !important
       color: $button-light-disabled-color !important
       pointer-events: none
-      
+
     &.btn--small
       width: $button-small-height
 
@@ -141,6 +162,10 @@
         font-size: $button-floating-large-icon-width
         height: $button-floating-large-icon-width
         width: $button-floating-large-icon-width
+
+.btn
+  &:hover:after
+    background-color: $button-dark-overlay
 
 /** Sizes */
 .btn
@@ -191,6 +216,9 @@
     &:hover
       box-shadow: none
 
+    .icon
+      color: inherit
+
   &--block
     display: flex
     flex: 1
@@ -212,3 +240,26 @@
 
     &--left
       margin-right: 16px
+
+
+//scheme, this might not be needed as the scheme (such as primary) uses important on it and we could do that with the
+//text-color too
+for scheme_name, color_value in $scheme-classes
+  text_colors_hash = lookup('$' + $scheme-config[scheme_name+'-text'] + '-text-colors')
+  .btn
+    &.{scheme_name}
+      background-color color_value
+      border-color: color_value
+      if text_colors_hash
+        color: text_colors_hash.default
+
+  .btn:not(.btn--flat):not(.btn--disabled)
+    &.{scheme_name}
+      if text_colors_hash
+        .icon
+          color: text_colors_hash.icon
+
+  .btn.btn--icon:not(.btn--raised), .btn.btn--flat, .btn.btn--outline
+    &.{scheme_name}
+      .icon
+        color: color_value

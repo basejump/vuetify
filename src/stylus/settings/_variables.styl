@@ -11,18 +11,23 @@ $color-pack := true
 $material-left-padding := 16px
 $material-right-padding := 16px
 
-$material-twelve-percent-light := rgba($material-dark.fg-color, $material-dark.divider-percent)
-$material-twelve-percent-dark := rgba($material-light.fg-color, $material-light.divider-percent)
+$material-twelve-percent-light := $light-text-colors.divider
+$material-twelve-percent-dark := $dark-text-colors.divider
 
 
 // Theme
 // ============================================================
 $body-bg-light := $material-light.bg-color
 $body-bg-dark := $material-dark.bg-color
-$color-light := rgba($material-dark.text-color, $material-dark.primary-text-percent)
-$color-dark := rgba($material-light.text-color, $material-light.primary-text-percent)
-$color-theme := rgba($material-theme.text-color, $material-theme.primary-text-percent)
+$color-light := $light-text-colors.default
+$color-dark := $dark-text-colors.default
+$color-theme := rgba($material-theme.text-color, $material-theme.primary-text-percent) //todo clean up
 
+//expect the theme tone (primary, secondary, info, etc and returns the text hash for it)
+//returns either dark or light-text-colors , dark-text by default if can't find the tone
+$getTextColorHash(scheme_class)
+  text_colors_hash = lookup('$' + $scheme-config[scheme_class+'-text'] + '-text-colors')
+  return text_colors_hash ? text_colors_hash : $dark-text-colors
 
 // Grid
 // ============================================================
@@ -136,6 +141,11 @@ $secondary-transition := 0.2s $transition.ease-in-out
 
 // Components
 // ============================================================
+// Icons
+$icon-color-dark := $dark-text-colors.icon
+$icon-color-dark-inactive := $dark-text-colors.icon-inactive
+$icon-color-light := $light-text-colors.icon
+$icon-color-light-inactive := $light-text-colors.icon-inactive
 
 // Alerts
 $alert-color := inherit
@@ -168,8 +178,8 @@ $breadcrumbs-padding := 0 14px
 
 // Base
 $button-border-radius := 2px
-$button-color := $material-light.fg-color
-$button-background-color := #999999
+$button-color := $dark-text-colors.default
+$button-background-color := $scheme-classes.neutral
 $button-height := 36px
 $button-font-size := 14px
 $button-font-weight := 500
@@ -178,10 +188,11 @@ $button-min-width := 88px
 $button-padding := 0 16px
 $button-text-transform := uppercase
 
-$button-dark-overlay := rgba($material-light.fg-color, .12)
-$button-dark-disabled-color := rgba($material-light.fg-color, .3)
-$button-light-overlay := rgba($material-dark.fg-color, .12)
-$button-light-disabled-color := rgba($material-dark.fg-color, .26)
+$button-dark-overlay := $dark-text-colors.divider //hover and disabled
+$button-dark-disabled-color := $dark-text-colors.disabled
+//TODOx
+$button-light-overlay := $light-text-colors.divider
+$button-light-disabled-color :=$light-text-colors.disabled
 
 $button-small-height := 28px
 $button-small-font-size := 13px
@@ -296,7 +307,10 @@ $picker-title-min-height := 105px
 $time-picker-number-font-size := 16px
 $time-picker-number-margin := 10px
 
-// Toolbar
+// Nav Toolbar (Primary App Toolbar deafaults)
+$toolbar-text-color := $getTextColorHash('neutral').default //should trickle to buttons and title
+$toolbar-background-color := lighten($scheme-classes.neutral, 60%)
+$toolbar-icon-color := $getTextColorHash('neutral').icon
 $toolbar-height := 56px
 $toolbar-item-padding := 0 16px
 $toolbar-padding-y := 0
