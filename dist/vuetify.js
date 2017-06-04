@@ -318,8 +318,10 @@ module.exports = function normalizeComponent (
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
+//This keys with the $scheme-classes stylus var and each of these will have a css .class
 /* harmony default export */ exports["a"] = {
   props: {
+    neutral: Boolean,
     primary: Boolean,
     secondary: Boolean,
     success: Boolean,
@@ -2723,7 +2725,7 @@ var Spacer = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util_helpers__["
     data.staticClass = data.staticClass ? (icon + " icon " + (data.staticClass) + " ") : (icon + " icon ")
 
     var classes = {
-      'icon--dark': !props.light || props.dark,
+      //'icon--dark': !props.light || props.dark,
       'icon--large': props.large,
       'icon--left': props.left,
       'icon--light': props.light || !props.dark,
@@ -7009,12 +7011,14 @@ var TabsItems = {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_themeable__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__mixins_contextualable__ = __webpack_require__(4);
+
 
 
 /* harmony default export */ exports["a"] = {
   functional: true,
 
-  mixins: [__WEBPACK_IMPORTED_MODULE_0__mixins_themeable__["a" /* default */]],
+  mixins: [__WEBPACK_IMPORTED_MODULE_0__mixins_themeable__["a" /* default */], __WEBPACK_IMPORTED_MODULE_1__mixins_contextualable__["a" /* default */]],
 
   props: {
     fixed: Boolean
@@ -7030,6 +7034,11 @@ var TabsItems = {
     if (props.light) { data.staticClass += ' toolbar--light' }
     if (props.dark) { data.staticClass += ' toolbar--dark' }
 
+    var schemeClasses = ['neutral','primary', 'secondary', 'success', 'info', 'warning', 'error']
+    schemeClasses.forEach(function (name) {
+      //console.log("prop", props[name])
+      if(props[name]) { data.staticClass += (' '+ name) }
+    })
     return h('nav', data, children)
   }
 };
