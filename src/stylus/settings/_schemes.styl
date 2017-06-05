@@ -35,7 +35,7 @@ $light-text-colors := {
 //TODO this should match what in the "Contextuable" mixin
 //TODO make it jive with https://material.io/color/
 //a good read https://medium.com/eightshapes-llc/color-in-design-systems-a1c80f65fa3
-$scheme-classes = {
+$scheme-classes-defaults := {
   neutral: $grey.lighten-2, //default background for buttons, nav-drawer, toolbar
   primary: $blue.darken-2,
   secondary: $grey.darken-3,
@@ -45,10 +45,11 @@ $scheme-classes = {
   error: $red.accent-2,
   success: $green.base
 }
+$scheme-classes = merge($scheme-classes-defaults, $scheme-classes is defined ? $scheme-classes : {} )
 //here for POC only, by default we use dark text so only override for light text colors, there should be a way to merge this hash with above
 //Its kept seperate right now because it spins through $scheme and adds them as css classes and we don't want that for these
 //set to light or dark and to point to $light-text-colors or $dark-text-colors
-$scheme-config = {
+$scheme-config-defaults := {
   //grey: "dark"
   primary-text: "light"
   secondary-text: "light"
@@ -57,3 +58,4 @@ $scheme-config = {
   error-text: "light"
   success-text: "light"
 }
+$scheme-config = merge($scheme-config-defaults, $scheme-config is defined ? $scheme-config : {} )
