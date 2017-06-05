@@ -16,6 +16,64 @@ $theme := {
   success: $green.base
 }
 
+//these are independent of material-light and dark below and can be used in either.
+$dark-text-base := #000
+$dark-foreground-colors := {
+  primary: rgba($dark-text-base, .87)
+  secondary: rgba($dark-text-base, .54),
+  hint: rgba($dark-text-base, .38),
+  divider: rgba($dark-text-base, .12),
+  disabled: rgba($dark-text-base, .38),
+  icon: rgba($dark-text-base, .54),
+  icon-inactive: rgba($dark-text-base, .38) //this is same as disabled, does it need to be here?
+}
+
+$light-text-base := #fff
+$light-foreground-colors := {
+  primary: $light-text-base //primary default
+  secondary: rgba($light-text-base, .7)
+  hint: rgba($light-text-base, .5)
+  divider: rgba($light-text-base, .12)
+  disabled: rgba($light-text-base, .5)
+  icon: rgba($light-text-base, 1)
+  icon-inactive: rgba($light-text-base, .5)
+}
+
+//TODO this should match what in the "Contextuable" mixin
+//TODO make it jive with https://material.io/color/
+//a good read https://medium.com/eightshapes-llc/color-in-design-systems-a1c80f65fa3
+$scheme-classes-defaults := {
+  neutral: $grey.lighten-2, //default background for raised buttons, nav-drawer, toolbar
+  primary: $blue.darken-2,
+  secondary: $grey.darken-3,
+  accent: $blue.accent-2,
+  info: $blue.base,
+  warning: $amber.base,
+  error: $red.accent-2,
+  success: $green.base
+}
+$scheme-classes = merge($scheme-classes-defaults, $scheme-classes is defined ? $scheme-classes : {} )
+
+//here for POC only, by default we use dark text so only override for light text colors, there should be a way to merge this hash with above
+//Its kept seperate right now because it spins through $scheme and adds them as css classes and we don't want that for these
+//set to light or dark and to point to $light-text-colors or $dark-text-colors
+$scheme-config-defaults := {
+  //grey: "dark"
+  primary-text: "light"
+  secondary-text: "light"
+  info-text: "light"
+  //warning-text: "dark"
+  error-text: "light"
+  success-text: "light"
+}
+$scheme-config = merge($scheme-config-defaults, $scheme-config is defined ? $scheme-config : {} )
+
+//expect the theme tone (primary, secondary, info, etc and returns the text hash for it)
+//returns either dark or light-text-colors , dark-text by default if can't find the tone
+$getTextColorHash(scheme_class)
+  text_colors_hash = lookup('$' + $scheme-config[scheme_class+'-text'] + '-foreground-colors')
+  return text_colors_hash ? text_colors_hash : $dark-foreground-colors
+
 // Material Design - https://material.io/guidelines/style/color.html#color-usability
 // ============================================================
 $material-light := {

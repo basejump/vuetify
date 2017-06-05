@@ -195,13 +195,25 @@
     &--left
       margin-right: 16px
 
+//scheme, this might not be needed as the scheme (such as primary) uses important on it and we could do that with the
+//text-color too
+for scheme_name, color_value in $scheme-classes
+  text_colors_hash = lookup('$' + $scheme-config[scheme_name+'-text'] + '-foreground-colors')
+  .btn
+    &.{scheme_name}
+      background-color color_value
+      border-color: color_value
+      if text_colors_hash
+        color: text_colors_hash.primary
 
-/** Themes */
-.btn
-  &.primary,
-  &.secondary,
-  &.success,
-  &.error,
-  &.warning,
-  &.info
-    color: $material-dark.text.primary
+  .btn:not(.btn--flat):not(.btn--disabled)
+    &.{scheme_name}
+      if text_colors_hash
+        .icon
+          color: text_colors_hash.icon
+
+  .btn.btn--icon:not(.btn--raised), .btn.btn--flat, .btn.btn--outline
+    &.{scheme_name}
+      .icon
+        color: color_value
+

@@ -100,3 +100,15 @@
   .input-group
     margin: 0 0 0 16px
     flex: 1
+
+//theme scheme color defaults
+for scheme_name, color_value in $scheme-classes
+  text_colors_hash = text_colors_hash = lookup('$' + $scheme-config[scheme_name+'-text'] + '-foreground-colors')
+  .toolbar
+    &.{scheme_name}
+      background-color color_value
+      border-color: color_value
+      if text_colors_hash
+        color: text_colors_hash.primary
+        .btn, .btn .icon, .toolbar__item
+          color: text_colors_hash.primary
